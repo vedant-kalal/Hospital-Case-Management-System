@@ -97,4 +97,4 @@ The Hospital Case Management System was developed by [Vedant Kalal].
 
 📝 License
 -------
-The Hospital Case Management System is licensed under the [License Name] license.
+The Hospital Case Management System is licensed under the [MIT] license.
