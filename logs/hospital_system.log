@@ -1,0 +1,145 @@
+2025-11-17 18:53:53 | INFO | hospital_case_mgmt | You have selected Health Center Services.
+2025-11-17 18:57:24 | INFO | hospital_case_mgmt | You have selected Health Center Services.
+2025-11-17 18:57:48 | INFO | hospital_case_mgmt | You have selected Health Center Services.
+2025-11-17 18:57:51 | INFO | hospital_case_mgmt | 
++------+----------------------+-----------------------------+----------+--------------+
+|   ID | Name                 | Address                     | Active   | Created At   |
++======+======================+=============================+==========+==============+
+|    1 | vedant health center | shyamal,satellite,ahmedabad | True     | 2006-05-28   |
++------+----------------------+-----------------------------+----------+--------------+
+
+2025-11-17 19:04:57 | INFO | hospital_case_mgmt | You have selected Health Center Services.
+2025-11-17 19:05:45 | WARNING | hospital_case_mgmt | Unauthorized access attempt to update_health_center with role doctor
+2025-11-17 19:06:27 | INFO | hospital_case_mgmt | You have selected Health Center Services.
+2025-11-17 19:06:50 | INFO | hospital_case_mgmt | admin entered the Database successfully to execute update_health_center.
+2025-11-17 19:06:51 | INFO | hospital_case_mgmt | Updated health center ID 1 with values: 
++------+--------------------------+-----------------------------+----------+--------------+
+|   ID | Name                     | Address                     | Active   | Created At   |
++======+==========================+=============================+==========+==============+
+|    1 | vedant health center new | shyamal,satellite,ahmedabad | False    | 2006-05-28   |
++------+--------------------------+-----------------------------+----------+--------------+
+2025-11-17 19:06:51 | INFO | hospital_case_mgmt | Are you sure you want to commit the transaction for update_health_center?
+2025-11-17 19:06:52 | INFO | hospital_case_mgmt | answer was 'yes',Transaction committed for update_health_center
+2025-11-17 19:07:08 | INFO | hospital_case_mgmt | You have selected Health Center Services.
+2025-11-17 19:07:24 | INFO | hospital_case_mgmt | You have selected Health Center Services.
+2025-11-17 19:08:05 | INFO | hospital_case_mgmt | Added new health center: sculptsoft center , Address: bopal, is_active: True, created_at: 2008-06-28 00:00:00
+2025-11-17 19:08:05 | INFO | hospital_case_mgmt | Are you sure you want to commit the transaction for add_health_center?
+2025-11-17 19:08:11 | INFO | hospital_case_mgmt | answer was 'yes',Transaction committed for add_health_center
+2025-11-17 19:08:18 | INFO | hospital_case_mgmt | You have selected Health Center Services.
+2025-11-17 19:08:29 | INFO | hospital_case_mgmt | admin entered the Database successfully to execute delete_health_center.
+2025-11-17 19:08:29 | INFO | hospital_case_mgmt | Deleted health center with ID 2.
+2025-11-17 19:08:29 | INFO | hospital_case_mgmt | Are you sure you want to commit the transaction for delete_health_center?
+2025-11-17 19:08:32 | INFO | hospital_case_mgmt | answer was 'yes',Transaction committed for delete_health_center
+2025-11-17 19:10:24 | INFO | hospital_case_mgmt | You have selected Clinician Services.
+2025-11-17 19:10:51 | INFO | hospital_case_mgmt | Added new clinician: kirtan , Health Center ID: 1, Email: vedantkalal28@gmail.com, Role: admin, is_active: False
+2025-11-17 19:10:51 | INFO | hospital_case_mgmt | Are you sure you want to commit the transaction for add_clinician?
+2025-11-17 19:10:53 | INFO | hospital_case_mgmt | answer was 'yes',Transaction committed for add_clinician
+2025-11-17 19:11:06 | INFO | hospital_case_mgmt | You have selected Clinician Services.
+2025-11-17 19:11:10 | INFO | hospital_case_mgmt | Fetched clinician by ID 1 :- 
++------+--------------------+--------+-------------------------+--------+----------+
+|   ID |   Health Center ID | Name   | Email                   | Role   | Active   |
++======+====================+========+=========================+========+==========+
+|    1 |                  1 | kirtan | vedantkalal28@gmail.com | admin  | False    |
++------+--------------------+--------+-------------------------+--------+----------+
+2025-11-17 19:11:14 | INFO | hospital_case_mgmt | You have selected Clinician Services.
+2025-11-17 19:11:24 | WARNING | hospital_case_mgmt |  Warning in fetch_clinicians_by_OptionalFilters: No matching clinicians found , with is_active=True and name=kirtan
+2025-11-17 19:11:24 | ERROR | hospital_case_mgmt | Error in fetch_clinicians_by_OptionalFilters: No matching clinicians found , with is_active=True and name=kirtan
+Traceback (most recent call last):
+  File "C:\Github Projects\SculpSoft_Projects\Hospital Case Management System (SQLAlchemy ORM)\src\utils\decorators.py", line 117, in wrapper
+    return func(self, *args, results=results, **kwargs)
+  File "C:\Github Projects\SculpSoft_Projects\Hospital Case Management System (SQLAlchemy ORM)\src\utils\decorators.py", line 53, in wrapper
+    result = func(self,*args, **kwargs)
+  File "C:\Github Projects\SculpSoft_Projects\Hospital Case Management System (SQLAlchemy ORM)\src\services\clinician_service.py", line 58, in fetch_clinicians_by_OptionalFilters
+    raise ValueError(f"No matching clinicians found , with is_active={is_active} and name={name}")
+ValueError: No matching clinicians found , with is_active=True and name=kirtan
+2025-11-17 19:11:56 | INFO | hospital_case_mgmt | You have selected Clinician Services.
+2025-11-17 19:12:04 | INFO | hospital_case_mgmt | 
++------+--------------------+--------+-------------------------+--------+----------+
+|   ID |   Health Center ID | Name   | Email                   | Role   | Active   |
++======+====================+========+=========================+========+==========+
+|    1 |                  1 | kirtan | vedantkalal28@gmail.com | admin  | False    |
++------+--------------------+--------+-------------------------+--------+----------+
+
+2025-11-17 19:12:12 | INFO | hospital_case_mgmt | You have selected Clinician Services.
+2025-11-17 19:12:21 | INFO | hospital_case_mgmt | You have selected Patient Case Services.
+2025-11-17 19:13:13 | INFO | hospital_case_mgmt | Added new patient case: kuldeep , Health Center ID: 1, Clinician ID: 1, Patient DOB: 2025-06-28 00:00:00, Status: open
+, Summary: biggest nerd
+Created At: 2024-04-24 00:00:00, Updated At: 2023-06-25 00:00:00
+2025-11-17 19:13:13 | INFO | hospital_case_mgmt | Are you sure you want to commit the transaction for add_patient_case?
+2025-11-17 19:13:15 | INFO | hospital_case_mgmt | answer was 'yes',Transaction committed for add_patient_case
+2025-11-17 19:13:19 | INFO | hospital_case_mgmt | You have selected Patient Case Services.
+2025-11-17 19:13:23 | INFO | hospital_case_mgmt | Fetched patient case by ID 1 :- 
++------+--------------------+----------------+----------------+---------------+--------------+----------+--------------+--------------+
+|   ID |   Health Center ID |   Clinician ID | Patient Name   | Patient DOB   | Summary      | Status   | Created At   | Updated At   |
++======+====================+================+================+===============+==============+==========+==============+==============+
+|    1 |                  1 |              1 | kuldeep        | 2025-06-28    | biggest nerd | open     | 2024-04-24   | 2023-06-25   |
++------+--------------------+----------------+----------------+---------------+--------------+----------+--------------+--------------+
+2025-11-17 19:13:37 | INFO | hospital_case_mgmt | You have selected Patient Case Services.
+2025-11-17 19:13:46 | INFO | hospital_case_mgmt | 
++------+--------------------+----------------+----------------+---------------+--------------+----------+--------------+--------------+
+|   ID |   Health Center ID |   Clinician ID | Patient Name   | Patient DOB   | Summary      | Status   | Created At   | Updated At   |
++======+====================+================+================+===============+==============+==========+==============+==============+
+|    1 |                  1 |              1 | kuldeep        | 2025-06-28    | biggest nerd | open     | 2024-04-24   | 2023-06-25   |
++------+--------------------+----------------+----------------+---------------+--------------+----------+--------------+--------------+
+
+2025-11-17 19:13:54 | INFO | hospital_case_mgmt | You have selected Case Note Services.
+2025-11-17 19:14:17 | WARNING | hospital_case_mgmt |  Warning in add_case_note: CaseNoteService.add_case_note() got an unexpected keyword argument 'patient_case_id'
+2025-11-17 19:16:01 | INFO | hospital_case_mgmt | You have selected Case Note Services.
+2025-11-17 19:16:18 | WARNING | hospital_case_mgmt |  Warning in add_case_note: CaseNoteService.add_case_note() got an unexpected keyword argument 'note'
+2025-11-17 19:16:56 | INFO | hospital_case_mgmt | You have selected Case Note Services.
+2025-11-17 19:17:09 | INFO | hospital_case_mgmt | Added new case note for Case ID: 1,Clinician ID: 1, Note: need medicine, Created At: 2024-04-27 00:00:00
+2025-11-17 19:17:09 | INFO | hospital_case_mgmt | Are you sure you want to commit the transaction for add_case_note?
+2025-11-17 19:17:11 | INFO | hospital_case_mgmt | answer was 'yes',Transaction committed for add_case_note
+2025-11-17 19:17:16 | INFO | hospital_case_mgmt | You have selected Case Note Services.
+2025-11-17 19:17:28 | INFO | hospital_case_mgmt | Fetched case note by ID 1 :- 
++------+-----------+----------------+---------------+--------------+
+|   ID |   Case ID |   Clinician ID | Note          | Created At   |
++======+===========+================+===============+==============+
+|    1 |         1 |              1 | need medicine | 2024-04-27   |
++------+-----------+----------------+---------------+--------------+
+2025-11-17 19:22:22 | INFO | hospital_case_mgmt | You have selected Case Note Services.
+2025-11-17 19:22:38 | INFO | hospital_case_mgmt | You have selected Case Note Services.
+2025-11-17 19:22:41 | INFO | hospital_case_mgmt | Fetched case note by ID 1 :- 
++------+-------------------+----------------+---------------+--------------+
+|   ID |   Patient Case ID |   Clinician ID | Note          | Created At   |
++======+===================+================+===============+==============+
+|    1 |                 1 |              1 | need medicine | 2024-04-27   |
++------+-------------------+----------------+---------------+--------------+
+2025-11-17 19:22:49 | INFO | hospital_case_mgmt | You have selected Case Note Services.
+2025-11-17 19:23:02 | WARNING | hospital_case_mgmt |  Warning in fetch_case_notes_by_OptionalFilters: CaseNoteService.fetch_case_notes_by_OptionalFilters() got an unexpected keyword argument 'clinician_id'
+2025-11-17 19:23:02 | ERROR | hospital_case_mgmt | Error in fetch_case_notes_by_OptionalFilters: CaseNoteService.fetch_case_notes_by_OptionalFilters() got an unexpected keyword argument 'clinician_id'
+Traceback (most recent call last):
+  File "C:\Github Projects\SculpSoft_Projects\Hospital Case Management System (SQLAlchemy ORM)\src\utils\decorators.py", line 117, in wrapper
+    return func(self, *args, results=results, **kwargs)
+  File "C:\Github Projects\SculpSoft_Projects\Hospital Case Management System (SQLAlchemy ORM)\src\utils\decorators.py", line 53, in wrapper
+    result = func(self,*args, **kwargs)
+TypeError: CaseNoteService.fetch_case_notes_by_OptionalFilters() got an unexpected keyword argument 'clinician_id'
+2025-11-17 19:24:00 | INFO | hospital_case_mgmt | You have selected Case Note Services.
+2025-11-17 19:24:08 | INFO | hospital_case_mgmt | 
++------+------------------+----------------+---------------+--------------+
+|   ID |   PatientCase ID |   Clinician ID | Note          | Created At   |
++======+==================+================+===============+==============+
+|    1 |                1 |              1 | need medicine | 2024-04-27   |
++------+------------------+----------------+---------------+--------------+
+
+2025-11-17 19:24:21 | INFO | hospital_case_mgmt | You have selected Case Note Services.
+2025-11-17 19:24:26 | ERROR | hospital_case_mgmt | Error in fetch_case_notes_by_OptionalFilters: (pymysql.err.OperationalError) (1525, "Incorrect DATE value: 'NaT'")
+2025-11-17 19:25:06 | INFO | hospital_case_mgmt | You have selected Case Note Services.
+2025-11-17 19:25:24 | INFO | hospital_case_mgmt | 
++------+------------------+----------------+---------------+--------------+
+|   ID |   PatientCase ID |   Clinician ID | Note          | Created At   |
++======+==================+================+===============+==============+
+|    1 |                1 |              1 | need medicine | 2024-04-27   |
++------+------------------+----------------+---------------+--------------+
+
+2025-11-17 19:26:26 | INFO | hospital_case_mgmt | You have selected Case Note Services.
+2025-11-17 19:27:00 | WARNING | hospital_case_mgmt |  Warning in update_case_note: CaseNoteService.update_case_note() got an unexpected keyword argument 'note'
+2025-11-17 19:27:27 | INFO | hospital_case_mgmt | You have selected Case Note Services.
+2025-11-17 19:27:43 | INFO | hospital_case_mgmt | Updated case note ID 1 with values: 
++------+-----------+----------------+---------+---------------------+
+|   ID |   Case ID |   Clinician ID | Note    | Created At          |
++======+===========+================+=========+=====================+
+|    1 |         1 |              1 | testing | 2024-04-29 00:00:00 |
++------+-----------+----------------+---------+---------------------+
+2025-11-17 19:27:43 | INFO | hospital_case_mgmt | Are you sure you want to commit the transaction for update_case_note?
+2025-11-17 19:27:45 | INFO | hospital_case_mgmt | answer was 'yes',Transaction committed for update_case_note
