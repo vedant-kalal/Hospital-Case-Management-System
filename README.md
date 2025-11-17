@@ -1,6 +1,5 @@
-🚀 Project Title & Tagline
-========================
-**Hospital Case Management System** 
+🚀 Hospital Case Management System
+======================== 
 > A comprehensive platform for managing patient cases, clinicians, health centers, and case notes.
 
 📖 Description
