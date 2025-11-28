@@ -1,17 +1,30 @@
 from ..models.case_note import CaseNote
-from ..config import session
+from ..models.clinician import Clinician
+from ..models.patient_case import PatientCase
+from ..config import session, get_session
 from ..utils.logger import logger
-from ..utils.decorators import transaction, exception_handling, expected_integer, optional_filters, login_role_required
+from ..utils.decorators import transaction, exception_handling, optional_filters, login_role_required
 from tabulate import tabulate
+import streamlit as st
+import pandas as pd
 
 
 class CaseNoteService:
     def __init__(self):
-        self.session = session
+        self.session = get_session()
 
 
     @transaction
     def add_case_note(self,case_id,clinician_id,note_text,created_at):
+        
+        patient_case = self.session.query(PatientCase).filter(PatientCase.id == case_id).first()
+        if not patient_case:
+            raise ValueError(f"Patient case with ID {case_id} does not exist.")
+        clinician = self.session.query(Clinician).filter(Clinician.id == clinician_id).first()
+        if not clinician:
+            logger.warning(f"Clinician with ID {clinician_id} does not exist.")
+            raise ValueError(f"Clinician with ID {clinician_id} does not exist.")
+
         
         new_case_note = CaseNote(
             case_id=case_id,
@@ -19,20 +32,31 @@ class CaseNoteService:
             note_text=str(note_text),
             created_at=created_at,
         )
-        session.add(new_case_note)
+        self.session.add(new_case_note)
         logger.info(f"Added new case note for Case ID: {case_id},Clinician ID: {clinician_id}, Note: {note_text}, Created At: {created_at}")
         return new_case_note
     
 
 
     @exception_handling
-    @expected_integer
+   
     def fetch_by_case_note_id(self, case_note_id):
-        case_note = session.query(CaseNote).filter(CaseNote.id == case_note_id).first()
+        case_note = self.session.query(CaseNote).filter(CaseNote.id == case_note_id).first()
         if not case_note:
-            raise ValueError(f"Case note with ID {case_note_id} does not exist.")
+            logger.warning(f"Case note with ID {case_note_id} does not exist.")
+            st.error(f"Case note with ID {case_note_id} does not exist.")
         else:
+            df = pd.DataFrame([{
+                "ID": case_note.id,
+                "Patient Case ID": case_note.case_id,
+                "Clinician ID": case_note.clinician_id,
+                "Note": case_note.note_text,
+                "Created At": case_note.created_at
+            }])
+            
             table = [[case_note.id,case_note.case_id, case_note.clinician_id, case_note.note_text, case_note.created_at] for case_note in [case_note]]
+            st.success(f"Fetched Case Note ID {case_note_id} successfully.")
+            st.table(df)
             logger.info(f"Fetched case note by ID {case_note_id} :- "
                         +"\n" + tabulate(
                             table,
@@ -47,6 +71,15 @@ class CaseNoteService:
     @exception_handling
     def fetch_case_notes_by_OptionalFilters(self, case_id=None, created_at=None, results=None):
         table = [[cn.id, cn.case_id, cn.clinician_id, cn.note_text, cn.created_at] for cn in results]
+        st.success(f"Fetched Case Notes with filters - Case ID: {case_id}, Created At: {created_at} successfully.")
+        df = pd.DataFrame([{
+            "ID": cn.id,
+            "Patient Case ID": cn.case_id,
+            "Clinician ID": cn.clinician_id,
+            "Note": cn.note_text,
+            "Created At": cn.created_at
+        } for cn in results])
+        st.table(df)
         if results:
             logger.info("\n" + tabulate(
                 table,
@@ -62,7 +95,7 @@ class CaseNoteService:
 
     @transaction
     def update_case_note(self, case_note_id, case_id=None, clinician_id=None, note_text=None, created_at=None):
-        case_note = session.query(CaseNote).filter(CaseNote.id == case_note_id).first()
+        case_note = self.session.query(CaseNote).filter(CaseNote.id == case_note_id).first()
         if not case_note:
             raise ValueError(f"Case note with ID {case_note_id} does not exist.")
 
@@ -75,6 +108,16 @@ class CaseNoteService:
         if created_at is not None:
             case_note.created_at = created_at
         
+        df = pd.DataFrame([{
+            "ID": case_note.id,
+            "Patient Case ID": case_note.case_id,
+            "Clinician ID": case_note.clinician_id,
+            "Note": case_note.note_text,
+            "Created At": case_note.created_at
+        } for case_note in [case_note]])
+        st.success(f"Updated Case Note ID {case_note_id} successfully.")
+        st.table(df)
+        
 
         table = [[case_note.id, case_note.case_id, case_note.clinician_id, case_note.note_text, case_note.created_at]]
         logger.info(f"Updated case note ID {case_note_id} with values: "+ "\n" + tabulate(
@@ -85,16 +128,19 @@ class CaseNoteService:
         
         return case_note
     
-    @expected_integer
+  
     @login_role_required
     @transaction
     def delete_case_note(self, case_note_id):
-        case_note = session.query(CaseNote).filter(CaseNote.id == case_note_id).first()
+        case_note = self.session.query(CaseNote).filter(CaseNote.id == case_note_id).first()
         if not case_note:
             raise ValueError(f"Case note with ID {case_note_id} does not exist.")
             
         else:
-            session.delete(case_note)
+            self.session.delete(case_note)
+            st.success(f"Deleted Case Note ID {case_note_id} successfully.")
             logger.info(f"Deleted case note with ID {case_note_id}.")
+            return True
+        return False
     
 

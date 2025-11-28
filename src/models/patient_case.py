@@ -14,5 +14,5 @@ class PatientCase(Base):
     updated_at = Column(Date, nullable=False)
     health_center = relationship("HealthCenter", back_populates="patient_case")
     clinician = relationship("Clinician", back_populates="patient_case")
-    case_note = relationship("CaseNote", back_populates="patient_case")
+    case_note = relationship("CaseNote", back_populates="patient_case", cascade="all, delete-orphan")
 

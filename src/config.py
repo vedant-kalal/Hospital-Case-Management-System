@@ -4,4 +4,8 @@ Base = declarative_base()
 DATABASE_URL = "mysql+pymysql://root:vedank10@localhost:3306/Hospital_case_management_system_db"
 engine = create_engine(DATABASE_URL, echo=True)
 Session = sessionmaker(bind=engine)
+
+def get_session():
+    return Session()
+
 session = Session()

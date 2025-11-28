@@ -1,54 +1,82 @@
 from functools import wraps
 from sqlalchemy.exc import IntegrityError, OperationalError, DataError, SQLAlchemyError
 from sqlalchemy.orm.exc import UnmappedInstanceError
-from ..config import session
+from ..config import session, get_session
 from .logger import logger
+import streamlit as st
+import dotenv
+import os
+dotenv.load_dotenv()
+
 
 
 global db_password
-db_password = "vedank10"
-
+db_password = os.getenv("password")
 
 def transaction(func):
     @wraps(func)
-    def wrapper(self,*args, **kwargs):
+    def wrapper(self, *args, **kwargs):
+    
+        if not hasattr(self, 'session'):
+             self.session = get_session()
+        
         session = self.session
-        try:
-            result = func(self, *args, **kwargs)
-            session.flush()
-            logger.info(f"Are you sure you want to commit the transaction for {func.__name__}?")
-            answer = input("Type 'yes' to commit, 'no' to rollback: ")
-            if answer.lower().strip() == 'yes':
-                session.commit()
-                logger.info(f"answer was 'yes',Transaction committed for {func.__name__}")
-                return result
-            else:
-                session.rollback()
-                logger.info(f"answer was 'no',Transaction rolled back for {func.__name__}")
+        
+        key = f"tx_{func.__name__}"
 
-        except (ValueError, IntegrityError, DataError, OperationalError, ValueError, TypeError, AttributeError, UnmappedInstanceError, SQLAlchemyError) as e:
-            session.rollback()
-            logger.warning(f" Warning in {func.__name__}: {e}", exc_info=False)
-            raise
+        if key not in st.session_state:
+            st.session_state[key] = "ask"
 
-        except Exception as e:
-            session.rollback()
-            logger.error(f" Critical error in {func.__name__}: {type(e).__name__} - {e}", exc_info=True)
-            raise
-        finally:
+        if st.session_state[key] == "ask":
+            st.warning(f" Are you sure you want to execute **{func.__name__}**?")
+            col1,col2 = st.columns(2)
+            
+            if col1.button("Commit", key=f"btn_commit_{key}"):
+                st.session_state[key] = "commit"
+                st.rerun()
+            
+            if col2.button("Rollback", key=f"btn_rollback_{key}"):
+                st.session_state[key] = "rollback"
+                st.rerun()
+            
+            st.stop()
+
+        elif st.session_state[key] == "commit":
             try:
-                session.close()
-            except Exception:
-                logger.exception("Failed to close session")
+                result = func(self, *args, **kwargs)
+                session.commit()
+                st.success(f"Transaction committed for **{func.__name__}**")
+                logger.info(f"Transaction committed for {func.__name__}")
+
+                del st.session_state[key]
+                return result
+            except (ValueError, IntegrityError, DataError, OperationalError, ValueError, TypeError, AttributeError,SQLAlchemyError) as e:
+                session.rollback()
+                st.error(f" Error: {e}")
+                logger.error(f"Error in {func.__name__}: {e}")
+                del st.session_state[key]
+                return None
+
+        elif st.session_state[key] == "rollback":
+            session.rollback()
+            st.warning(f"Transaction rolled back for **{func.__name__}**")
+            logger.info(f"Transaction rolled back for {func.__name__}")
+            del st.session_state[key]
+            return None
+        
+        return None
 
     return wrapper
-
 
 
 def exception_handling(func):
     @wraps(func)
     def wrapper(self,*args,**kwargs):
-        self.session = session
+        
+        if not hasattr(self, 'session'):
+             self.session = get_session()
+        
+        session = self.session
         try:
             result = func(self,*args, **kwargs)
             session.commit()
@@ -57,34 +85,19 @@ def exception_handling(func):
         except (ValueError, IntegrityError, DataError, OperationalError, ValueError, TypeError, AttributeError,SQLAlchemyError) as e:
             session.rollback()
             logger.warning(f" Warning in {func.__name__}: {e}", exc_info=False)
+            st.error(f" Warning: {e}")
             raise
+            
 
         except Exception as e:
             session.rollback()
             logger.error(f" Critical error in {func.__name__}: {type(e).__name__} - {e}", exc_info=True)
+            st.error(f" Critical Error: {type(e).__name__} - {e}")
             raise
         finally:
             session.close()
     return wrapper
 
-
-
-def expected_integer(func):
-    @wraps(func)
-    def wrapper(self, *args, **kwargs):
-        if args:
-            value = args[0]       
-        elif kwargs:
-            value = list(kwargs.values())[0]   
-        else:
-            raise TypeError("Expected one integer parameter")
-        
-        if not isinstance(value, int):
-            logger.warning(f"Invalid input type for {func.__name__}: "f"Expected integer but got {type(value).__name__}")
-            raise TypeError(f"Invalid input type: Expected integer but got {type(value).__name__}")
-        return func(self, *args, **kwargs)
-
-    return wrapper
 
 
 
@@ -93,7 +106,11 @@ def optional_filters(model, field1, field2):
         @wraps(func)
         def wrapper(self, *args, **kwargs):
             try:
+                
+                if not hasattr(self, 'session'):
+                    self.session = get_session()
                 session = self.session
+                
                 query = session.query(model)
 
                 value1 = kwargs.get(field1, None)
@@ -116,29 +133,59 @@ def optional_filters(model, field1, field2):
 
                 return func(self, *args, results=results, **kwargs)
 
-            except Exception as e:
-                logger.error(f"Error in {func.__name__}: {e}", exc_info=True)
+            except (ValueError, IntegrityError, DataError, OperationalError, TypeError, AttributeError, SQLAlchemyError) as e:
+                logger.warning(f"Error in {func.__name__}", exc_info=True)
+                st.error(f" error: {e}")
                 raise
 
         return wrapper
     return decorator
 
 
-
 def login_role_required(func):
         @wraps(func)
         def wrapper(self, *args, **kwargs):
-            required_role = input("Enter your role to proceed (doctor,nurse,admin,pharmacists,lab technicians): ").strip().lower()
-            if required_role == "admin":
-                password = input("Enter database password to proceed: ").strip()
-                if password == db_password:
+        
+            key = f"login_{func.__name__}"
+            if key not in st.session_state:
+                st.session_state[key] = "ask"
+
+            if st.session_state[key] == "ask":
+                st.info(f" Admin authorization required to execute **{func.__name__}**")
+                with st.form(key=f"form_{key}"):
+                    role = st.text_input("Role")
+                    pwd = st.text_input("Password", type="password")
+                    submitted = st.form_submit_button("Proceed")
+                    
+                    if submitted:
+                        st.session_state[f"{key}_role"] = role
+                        st.session_state[f"{key}_pwd"] = pwd
+                        st.session_state[key] = "check"
+                        st.rerun()
+                st.stop()
+
+            if st.session_state[key] == "check":
+                required_role = st.session_state.get(f"{key}_role", "").strip().lower()
+                password = st.session_state.get(f"{key}_pwd", "").strip()
+                
+                if required_role == "admin" and password == db_password:
                     logger.info(f"{required_role} entered the Database successfully to execute {func.__name__}.")
-                    print(f"WELCOME, {required_role}! , You have access to execute {func.__name__}.")
-                    return func(self, *args, **kwargs)
+                    st.success(f"WELCOME, {required_role}! You have access to execute {func.__name__}.")
+                    result = func(self, *args, **kwargs)
+                    if result is not None:
+                        del st.session_state[key]
+                        
+                        if f"{key}_role" in st.session_state: del st.session_state[f"{key}_role"]
+                        if f"{key}_pwd" in st.session_state: del st.session_state[f"{key}_pwd"]
+                    return result
                 else:
                     logger.warning(f"Incorrect DataBase Password attempt for {required_role} role.")
-                    raise PermissionError(f"Incorrect database password for {required_role} role.")
-            else:
-                logger.warning(f"Unauthorized access attempt to {func.__name__} with role {required_role}")
-                raise PermissionError(f"Access denied: {required_role} role does not have permission to execute {func.__name__}.")
+                    st.error(f"Incorrect database password or role.")
+                    if st.button("Try Again", key=f"retry_{key}"):
+                        st.session_state[key] = "ask"
+                        st.rerun()
+                    st.stop()
+            
+            return None
+
         return wrapper
