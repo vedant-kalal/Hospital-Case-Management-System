@@ -39,3 +39,5 @@ class FetchClinicianByOptionalFilters(BaseModel):
 
 class DeleteClinician(BaseModel):
     id: int
+
+

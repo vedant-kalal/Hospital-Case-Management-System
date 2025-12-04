@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from src.api.v1.deps.db import get_db
 from src.api.v1.deps.auth import get_current_user
 from src.api.v1.schemas.health_center_schema import HealthCenterCreate, HealthCenterUpdate, HealthCenterResponse, FetchHealthCenterByID, FetchHealthCenterByOptionalFilters, DeleteHealthCenter
-from src.models.health_center import HealthCenter 
+from src.models.health_center import HealthCenter
+from src.api.v1.schemas.health_center_schema import CursorPaginationResponse    
 
 router = APIRouter(prefix="/health-centers", tags=["Health Centers"])
 
@@ -42,6 +43,20 @@ def delete_health_center(hc_id:int, db: Session = Depends(get_db), current_user:
     db.delete(hc)
     db.commit()
     return {"message": "Health Center deleted successfully"}    
+
+@router.get("/", response_model=list[HealthCenterResponse])
+def list_health_centers(
+    after: int | None = None,
+    limit: int = 3,
+    db: Session = Depends(get_db),
+):
+    query = db.query(HealthCenter).order_by(HealthCenter.id.asc())
+
+    if after:
+        query = query.filter(HealthCenter.id > after)
+
+    items = query.limit(limit).all()
+    return items
 
 
 

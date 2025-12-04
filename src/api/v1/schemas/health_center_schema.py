@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import date
+from typing import List, Optional
 
 
 class HealthCenterCreate(BaseModel):
@@ -34,6 +35,16 @@ class FetchHealthCenterByOptionalFilters(BaseModel):
     
 class DeleteHealthCenter(BaseModel):
     id: int 
+
+
+class CursorPaginationResponse(BaseModel):
+    items: List[HealthCenterResponse]
+    next_cursor: Optional[int]
+    limit: int
+
+    class Config:
+        orm_mode = True
+
 
 
     
